@@ -1,0 +1,795 @@
+:root {
+  --bg: #16161a;
+  --panel: #1e1e24;
+  --panel-raised: #26262e;
+  --border: #33333d;
+  --text: #e6e6ea;
+  --text-dim: #9a9aa8;
+  --accent: #5b9dff;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ---------------------------------------------------------------- top bar */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.badge {
+  margin-left: 6px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--panel-raised);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.group.right {
+  margin-left: auto;
+}
+
+button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel-raised);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  border-color: #4a4a58;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.toolButton.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #07142b;
+  font-weight: 600;
+}
+
+.swatch {
+  display: block;
+  width: 34px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.swatch input {
+  width: 200%;
+  height: 200%;
+  margin: -25%;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* ----------------------------------------------------------------- stage */
+
+.stage {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.viewport {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+#stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+#stage.panning {
+  cursor: grabbing;
+}
+
+.stats,
+.hint {
+  position: absolute;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(12, 12, 16, 0.82);
+  color: var(--text-dim);
+  font-size: 11px;
+  pointer-events: none;
+}
+
+.stats {
+  top: 10px;
+  left: 10px;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+.hint {
+  bottom: 10px;
+  left: 10px;
+}
+
+/* --------------------------------------------------------------- sidebar */
+
+.sidebar {
+  flex: none;
+  width: 300px;
+  padding: 12px;
+  border-left: 1px solid var(--border);
+  background: var(--panel);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-raised);
+}
+
+.panel h2 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.panelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.panelHead h2 {
+  margin-bottom: 10px;
+}
+
+.panelActions {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.panelActions button {
+  padding: 2px 9px;
+}
+
+.field + .field {
+  margin-top: 14px;
+}
+
+.fieldHead {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.fieldHead output {
+  color: var(--text-dim);
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+input[type='range'] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--accent);
+}
+
+select {
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+}
+
+.sub {
+  margin-top: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.pair {
+  display: grid;
+  grid-template-columns: 32px 1fr 40px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--text-dim);
+}
+
+.pair output {
+  text-align: right;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.check.standalone + .field,
+.field + .check.standalone {
+  margin-top: 14px;
+}
+
+.check input {
+  accent-color: var(--accent);
+}
+
+.note {
+  margin: 6px 0 0;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------- layers */
+
+.layerList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.layerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--panel);
+  cursor: pointer;
+}
+
+.layerRow.active {
+  border-color: var(--accent);
+  background: rgba(91, 157, 255, 0.12);
+}
+
+.layerRow .name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layerRow .visibility {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.layerRow.hidden .name {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.layerRow.folder .name {
+  font-weight: 600;
+}
+
+/* The stroke target when it isn't also the selection (i.e. a folder is selected). */
+.layerRow.drawTarget:not(.active) {
+  border-color: #3d4f6b;
+}
+
+.layerRow.dragging {
+  opacity: 0.4;
+}
+
+.twisty {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.layerProps {
+  margin-bottom: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.layerProps .pair {
+  grid-template-columns: 42px 1fr 40px;
+  margin-top: 0;
+}
+
+.layerProps .pair + .pair {
+  margin-top: 6px;
+}
+
+.layerProps select {
+  padding: 3px 5px;
+}
+
+.layerProps select:disabled,
+.layerProps input:disabled {
+  opacity: 0.4;
+}
+
+.layerBadge {
+  flex: none;
+  color: var(--text-dim);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.renameInput {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 4px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+/* Drop indicators: a line for reordering, a filled outline for dropping into a folder. */
+.layerRow[data-drop='above'] {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.layerRow[data-drop='below'] {
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+
+.layerRow[data-drop='inside'] {
+  border-color: var(--accent);
+  background: rgba(91, 157, 255, 0.2);
+}
+
+/* --------------------------------------------------------------- presets */
+
+.presetList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.presetRow {
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: var(--panel);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.presetRow.active {
+  border-color: var(--accent);
+  background: rgba(91, 157, 255, 0.12);
+}
+
+.presetEmpty {
+  padding: 6px 2px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* ---------------------------------------------------------------- dialog */
+
+.appDialog {
+  width: min(420px, 92vw);
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+}
+
+.appDialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.appDialog form {
+  padding: 16px;
+}
+
+.dialogHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.dialogHead h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.dialogCloseBtn {
+  padding: 2px 9px;
+  font-size: 15px;
+  line-height: 1;
+}
+
+.dialogTabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.dialogTab {
+  flex: 1;
+  font-size: 12px;
+}
+
+.dialogTab[aria-pressed='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #07142b;
+  font-weight: 600;
+}
+
+.appDialog input[type='number'] {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+.dialogFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #07142b;
+  font-weight: 600;
+}
+
+.anchorGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 30px);
+  gap: 4px;
+}
+
+.anchorGrid button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+
+.anchorGrid button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* --------------------------------------------------------------- transform */
+
+.transformOverlay {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+  /* Only the handles themselves take input; the rest must fall through to the canvas. */
+  pointer-events: none;
+}
+
+.transformOverlay[hidden] {
+  display: none;
+}
+
+.transformOutline {
+  fill: rgba(91, 157, 255, 0.08);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  cursor: move;
+  pointer-events: auto;
+}
+
+.transformStem {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+
+.transformHandle,
+.transformRotate {
+  fill: var(--panel);
+  stroke: var(--accent);
+  stroke-width: 2;
+  pointer-events: auto;
+}
+
+.transformHandle {
+  cursor: nwse-resize;
+}
+
+.transformRotate {
+  fill: var(--accent);
+  cursor: grab;
+}
+
+/* ------------------------------------------------------------ node editor */
+
+.nodePanel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(20, 20, 26, 0.95);
+  overflow: hidden;
+}
+
+.nodePanel[hidden] {
+  display: none;
+}
+
+.nodePanelHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.nodePanel .note {
+  margin: 8px 10px 0;
+}
+
+.nodeCanvas {
+  position: relative;
+  flex: 1;
+  margin-top: 8px;
+  overflow: auto;
+}
+
+.nodeWires {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.nodeWire {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  opacity: 0.75;
+}
+
+.nodeOutput {
+  position: absolute;
+  width: 62px;
+  padding: 6px 0;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: rgba(91, 157, 255, 0.16);
+  text-align: center;
+  font-weight: 600;
+}
+
+.nodeBox {
+  position: absolute;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-raised);
+  cursor: grab;
+  user-select: none;
+}
+
+.nodeBox.dragging {
+  cursor: grabbing;
+  border-color: var(--accent);
+}
+
+.nodeBox.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.nodeBox.hidden {
+  opacity: 0.55;
+}
+
+.nodeHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 2px;
+}
+
+.nodePort {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.nodeBox.hidden .nodePort {
+  background: transparent;
+}
+
+.nodeTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nodeMeta {
+  padding: 0 10px 8px 30px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.nodeChildren {
+  border-top: 1px solid var(--border);
+  padding: 4px;
+}
+
+.nodeChildRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.nodeChildRow.selected {
+  background: rgba(91, 157, 255, 0.16);
+}
+
+.nodeChildRow.hidden span {
+  color: var(--text-dim);
+  text-decoration: line-through;
+}
+
+.nodeChildToggle {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.nodeChildEmpty {
+  padding: 3px 6px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* ----------------------------------------------------------- shortcuts */
+
+.shortcutRows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.shortcutRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.shortcutKey {
+  min-width: 132px;
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+}
+
+.shortcutRow.capturing .shortcutKey {
+  border-color: var(--accent);
+  background: rgba(91, 157, 255, 0.18);
+}
+
+.shortcutConflict {
+  grid-column: 1 / -1;
+  color: #ffb454;
+  font-size: 11px;
+}
+
+.appDialog code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  font-size: 11px;
+}

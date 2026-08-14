@@ -1,0 +1,23 @@
+# Separate projects with their own repositories — not part of this repo.
+/TrainingDraw/
+/shared/
+
+# Node
+node_modules/
+dist/
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+
+# WebView2 runtime cache (auto-generated on first launch, not build output)
+*.WebView2/
+
+# Claude Code local settings (machine-specific, not meant to be shared)
+.claude/settings.local.json
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.user
+.vs/

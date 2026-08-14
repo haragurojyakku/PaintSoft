@@ -1,0 +1,843 @@
+:root {
+  --bg: #0f1115;
+  --panel: #171a21;
+  --panel2: #1d2230;
+  --text: #e8eaf0;
+  --muted: #aab0c0;
+  --border: rgba(255, 255, 255, 0.08);
+  --accent: #5aa8ff;
+}
+
+* { box-sizing: border-box; }
+
+/* Several elements set an explicit `display` on their own class (e.g. .control uses
+   inline-flex) which, at equal specificity, wins over the UA stylesheet's [hidden] rule
+   by source order — this reasserts the `hidden` attribute's contract globally. */
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  color: var(--text);
+  background: radial-gradient(1200px 700px at 30% 10%, #161a26, var(--bg));
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", "Hiragino Kaku Gothic ProN", Meiryo, sans-serif;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(23, 26, 33, 0.9), rgba(23, 26, 33, 0.75));
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+}
+
+.control {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(29, 34, 48, 0.85), rgba(23, 26, 33, 0.6));
+}
+
+.control > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.control select,
+.control input[type="range"],
+.control input[type="color"],
+.control input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.control select,
+.control input[type="number"] {
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+
+.control input[type="color"] {
+  width: 34px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+}
+
+.control input[type="range"] {
+  width: 160px;
+}
+
+.control.vertical {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.control.vertical input[type="range"] {
+  width: 100%;
+}
+
+.control.vertical input[type="color"] {
+  width: 100%;
+}
+
+.buttons.vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  color: var(--text);
+  opacity: 0.9;
+  min-width: 2ch;
+  text-align: right;
+}
+
+.buttons {
+  gap: 8px;
+}
+
+button {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+.stage {
+  height: calc(100% - 58px);
+  padding: 14px;
+  display: flex;
+  gap: 14px;
+  align-items: stretch;
+}
+
+.workspace {
+  position: relative;
+  height: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.brushPanel {
+  flex: 0 0 220px;
+  width: 220px;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(29, 34, 48, 0.65), rgba(23, 26, 33, 0.55));
+}
+
+.brushPanelTitle {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.brushPanelSectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.brushPresetPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brushPresetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.brushPresetActions {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.brushPresetActions button {
+  padding: 2px 7px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.brushPresetList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.brushPresetEmpty {
+  padding: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.brushPresetRow {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brushPresetRow:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.brushPresetRow.active {
+  outline: 1px solid rgba(90, 168, 255, 0.6);
+  outline-offset: -1px;
+  color: var(--accent);
+}
+
+.controlRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.controlSubOption {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+  padding: 8px 0 0 10px;
+  border-top: 1px dashed var(--border);
+  border-left: 2px solid var(--border);
+  padding-left: 10px;
+}
+
+.controlSubOption > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.controlSubOption input[type="range"] {
+  width: 100%;
+}
+
+/* Shared spec for a min/max pressure-driven range: a header (label + "apply pressure"
+   checkbox) followed by a labeled min row and max row. Used identically by 太さ (nested
+   inside its own control) and 不透明度 (its own top-level control). */
+.pressureRangeGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pressureRangeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pressureRangeHeader > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.pressureRangeToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.pressureRangeToggle input[type="checkbox"] {
+  margin: 0;
+}
+
+.rangeLabel {
+  font-size: 11px;
+  color: var(--muted);
+  min-width: 2.5em;
+}
+
+.panel {
+  position: absolute;
+}
+
+.canvasWrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: calc(100% - 352px);
+  height: 100%;
+  min-width: 420px;
+  min-height: 320px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)),
+    repeating-conic-gradient(from 0deg, rgba(255, 255, 255, 0.03) 0 25%, transparent 0 50%)
+      0 0/24px 24px,
+    #0b0d12;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.panelHandle {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 2;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(15, 17, 21, 0.6);
+  backdrop-filter: blur(8px);
+  user-select: none;
+  cursor: grab;
+}
+
+.panelHandle:active {
+  cursor: grabbing;
+}
+
+.nodePanel {
+  right: 0;
+  top: 0;
+  width: 340px;
+  height: 100%;
+  min-width: 260px;
+  min-height: 240px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(29, 34, 48, 0.65), rgba(23, 26, 33, 0.55));
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.resizeHandle {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(90, 168, 255, 0.18);
+  cursor: nwse-resize;
+  z-index: 3;
+}
+
+.resizeHandle:hover {
+  background: rgba(90, 168, 255, 0.28);
+}
+
+.resizeEdge {
+  position: absolute;
+  z-index: 3;
+  background: transparent;
+}
+
+.resizeEdge.top {
+  left: 10px;
+  right: 10px;
+  top: 0;
+  height: 10px;
+  cursor: ns-resize;
+}
+
+.resizeEdge.bottom {
+  left: 10px;
+  right: 10px;
+  bottom: 0;
+  height: 10px;
+  cursor: ns-resize;
+}
+
+.resizeEdge.left {
+  top: 10px;
+  bottom: 10px;
+  left: 0;
+  width: 10px;
+  cursor: ew-resize;
+}
+
+.resizeEdge.right {
+  top: 10px;
+  bottom: 10px;
+  right: 0;
+  width: 10px;
+  cursor: ew-resize;
+}
+
+.nodeHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: grab;
+  user-select: none;
+}
+
+.nodeHeader:active {
+  cursor: grabbing;
+}
+
+.nodeTitle {
+  font-weight: 600;
+}
+
+/* Still used inside individual folder nodes rendered in the node graph (add-layer/
+   add-subfolder/delete buttons) — not the node PANEL's own header, which no longer has a
+   button row (moved to the topbar). */
+.nodeButtons {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.nodeHelp {
+  padding: 10px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  line-height: 1.5;
+}
+
+.nodeEditor {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: auto;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 24px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.03),
+      rgba(255, 255, 255, 0.03) 1px,
+      transparent 1px,
+      transparent 24px
+    );
+}
+
+.nodeLinks {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.nodeNodes {
+  position: relative;
+  min-height: 100%;
+}
+
+.node {
+  position: absolute;
+  width: 220px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(15, 17, 21, 0.55);
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+.node.selected {
+  outline: 2px solid rgba(90, 168, 255, 0.6);
+  outline-offset: 2px;
+}
+
+.node.dropTarget {
+  outline: 2px dashed rgba(80, 200, 120, 0.85);
+  outline-offset: 2px;
+  background: rgba(80, 200, 120, 0.12);
+}
+
+.nodeHead {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.nodePorts.left { justify-content: flex-start; }
+.nodePorts.right { justify-content: flex-end; }
+
+.nodePorts {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nodeName {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nodeBody {
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nodeMeta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.nodePort {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(90, 168, 255, 0.25);
+}
+
+.nodePort.connected {
+  background: rgba(90, 168, 255, 0.65);
+}
+
+
+.nodeToggle {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.nodeToggle input {
+  accent-color: var(--accent);
+}
+
+.folderBody {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.folderChildRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.folderChildRow.active {
+  outline: 1px solid rgba(90, 168, 255, 0.6);
+  outline-offset: -1px;
+}
+
+.folderChildRow input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.folderChildName {
+  flex: 1 1 auto;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.folderChildRow button {
+  padding: 2px 6px;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.folderChildFolder {
+  background: rgba(90, 168, 255, 0.08);
+}
+
+.folderExpandBtn {
+  padding: 2px 4px !important;
+  min-width: 18px;
+}
+
+.folderNested {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-left: 16px;
+  padding-left: 8px;
+  border-left: 1px dashed var(--border);
+}
+
+canvas {
+  /* Actual on-screen size is set in px by layoutCanvasDisplay() (letterboxed to the
+     document's own resolution) — these are just a pre-JS fallback so it never overflows. */
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+  touch-action: none;
+  transform-origin: center center;
+}
+
+/* #canvas stays the pointer-event target and coordinate reference (its
+   getBoundingClientRect()/width/height drive both stroke math and #canvasScreen's own
+   sizing below) but is never actually shown — its pixels get redrawn into #canvasScreen via
+   syncCanvasScreen() in app.js, which manually chooses smoothing quality per scale factor
+   instead of leaving the browser's own (lower-quality, alias-prone at large downscale
+   ratios) CSS scaling of the raw canvas element to do it. */
+#canvas {
+  opacity: 0;
+}
+
+#canvasScreen {
+  position: absolute;
+  pointer-events: none;
+  /* Overrides the general canvas{} rule's max-width/max-height:100% above — this canvas's
+     JS-computed width/height (syncCanvasScreen in app.js) must be able to exceed the panel's
+     own size when zoomed in or panned; .canvasWrap's overflow:hidden is what clips it, not a
+     max-size constraint here (which would otherwise silently clamp it back down to the panel
+     size, leaving stale/misaligned content once the transformed #canvas grows past it). */
+  max-width: none;
+  max-height: none;
+}
+
+canvas.cursorGrab {
+  cursor: grab;
+}
+
+canvas.cursorGrabbing {
+  cursor: grabbing;
+}
+
+.hint {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(15, 17, 21, 0.6);
+  backdrop-filter: blur(8px);
+  user-select: none;
+}
+
+.appDialog {
+  width: min(480px, calc(100vw - 40px));
+  max-height: calc(100vh - 80px);
+  padding: 20px 22px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(29, 34, 48, 0.98), rgba(23, 26, 33, 0.98));
+  color: var(--text);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.appDialog::backdrop {
+  background: rgba(5, 6, 9, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dialogHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.dialogHead h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.dialogCloseBtn {
+  padding: 2px 8px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.dialogFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.shortcutRows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.shortcutRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.shortcutLabel {
+  flex: 1 1 auto;
+  font-size: 13px;
+}
+
+.keyCapture {
+  min-width: 96px;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.keyCapture.listening {
+  outline: 2px solid rgba(90, 168, 255, 0.6);
+  outline-offset: 1px;
+  color: var(--accent);
+}
+
+.shortcutRowReset {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+.dialogTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.dialogTab {
+  flex: 1 1 auto;
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+.dialogTab[aria-pressed="true"] {
+  background: rgba(90, 168, 255, 0.18);
+  border-color: rgba(90, 168, 255, 0.5);
+  color: var(--accent);
+}
+
+.dialogHint {
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.anchorGridWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.anchorGridWrap > span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.anchorGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 32px);
+  grid-template-rows: repeat(3, 32px);
+  gap: 4px;
+}
+
+.anchorCell {
+  padding: 0;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.anchorCell.active {
+  background: rgba(90, 168, 255, 0.35);
+  border-color: rgba(90, 168, 255, 0.7);
+}
+
+@media (max-width: 900px) {
+  .stage { height: auto; min-height: calc(100% - 58px); flex-direction: column; }
+  .control input[type="range"] { width: 120px; }
+  .canvasWrap { width: 100%; height: 60vh; }
+  .nodePanel { left: 0; right: 0; top: calc(60vh + 12px); height: 360px; width: auto; }
+  .workspace { height: calc(60vh + 12px + 360px); flex: 0 0 auto; }
+  .brushPanel { flex: 0 0 auto; width: 100%; height: auto; }
+}
