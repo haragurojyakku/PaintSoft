@@ -146,21 +146,18 @@ npm run build
 
 `base: './'` で相対パス出力にしているので、`dist/` をそのまま静的ホストにも、デスクトップ版の仮想ホストマッピング（`https://paintsoft.local/`）にも置けます。
 
-## デスクトップ版（WPF + WebView2）につなぐ
+## デスクトップ版（WPF + WebView2）
 
-デスクトップの殻（`.clip` の読み書きを担うC#側）はどちらのバージョンでもそのまま使えます。web側の窓口（`window.loadClipDocument` / `window.getClipExportDocument`）はv2でも実装済みです。
+`Desktop/`（`PaintSoftNext.Desktop.csproj`）がデスクトップの殻です。v1のC#側（`.clip` の読み書き）をそのまま移植し、`<Content Include="..\dist\**\*.*">` のグロブでこのフォルダの `dist/` を読み込むようになっています（Viteの出力はファイル名にハッシュが付くため、個別指定ではなくグロブが必要です）。web側の窓口（`window.loadClipDocument` / `window.getClipExportDocument`）はv2でも実装済みです。
 
-`PaintSoft.Desktop.csproj` の `<ItemGroup>` を、v1の個別ファイル列挙から次のグロブに差し替えるとv2が起動します（Viteの出力はファイル名にハッシュが付くため、個別指定ではなくグロブが必要です）:
+ビルド手順:
 
-```xml
-<ItemGroup>
-  <Content Include="..\..\PaintSoftNext\dist\**\*.*" Link="web\%(RecursiveDir)%(Filename)%(Extension)">
-    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
+```bash
+npm run build
+dotnet publish Desktop/PaintSoftNext.Desktop.csproj -c Release -r win-x64 --self-contained true -o exe
 ```
 
-`npm run build` を先に済ませてから `dotnet run` してください。v1に戻したいときは元の `<ItemGroup>` に戻すだけです。
+`exe/PaintSoftNext.Desktop.exe` が生成されます。開発中に直接動かすだけなら `npm run build` の後に `dotnet run --project Desktop` でも起動できます。
 
 ## v1からの意図的な変更
 

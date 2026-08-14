@@ -2,12 +2,6 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "paintsoft",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "8420", "--directory", "PaintSoft"],
-      "port": 8420
-    },
-    {
       "name": "paintsoft-next",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "PaintSoftNext", "run", "dev"],
