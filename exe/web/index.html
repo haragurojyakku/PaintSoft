@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>PaintSoft v2</title>
+    <script type="module" crossorigin src="./assets/index-bArnVg1q.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B6YArq28.css">
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">PaintSoft <span class="badge">v2 · WebGL2</span></div>
+
+        <div class="group" role="group" aria-label="ツール">
+          <button type="button" data-tool="brush" class="toolButton active" title="ブラシ (B)">ブラシ</button>
+          <button type="button" data-tool="eraser" class="toolButton" title="消しゴム (E)">消しゴム</button>
+          <button type="button" data-tool="bucket" class="toolButton" title="バケツ (G)">バケツ</button>
+          <button type="button" data-tool="eyedropper" class="toolButton" title="スポイト (I)">スポイト</button>
+          <button type="button" data-tool="selectRect" class="toolButton" title="長方形選択 (M)">□選択</button>
+          <button type="button" data-tool="selectLasso" class="toolButton" title="なげなわ選択 (L)">なげなわ</button>
+          <button type="button" data-tool="transform" class="toolButton" title="変形 (T)｜Enterで確定 / Escapeで取消">変形</button>
+        </div>
+
+        <div class="group">
+          <button id="selectAll" type="button" title="すべて選択 (Ctrl+A)">全選択</button>
+          <button id="deselect" type="button" title="選択を解除 (Ctrl+D)">選択解除</button>
+          <button id="invertSelection" type="button" title="選択範囲を反転 (Ctrl+Shift+I)">反転</button>
+          <button id="clearSelection" type="button" title="選択範囲を消去 (Delete)">範囲を消去</button>
+          <button id="fillSelection" type="button" title="選択範囲を描画色で塗る">範囲を塗る</button>
+        </div>
+
+        <div class="group">
+          <label class="swatch" title="描画色"><input id="color" type="color" value="#111111" /></label>
+          <label class="swatch" title="背景色"><input id="bgColor" type="color" value="#ffffff" /></label>
+        </div>
+
+        <div class="group">
+          <button id="undo" type="button" title="元に戻す (Ctrl+Z)">元に戻す</button>
+          <button id="redo" type="button" title="やり直し (Ctrl+Y)">やり直し</button>
+        </div>
+
+        <div class="group">
+          <button id="saveProject" type="button" title="レイヤー構成を保持して保存">プロジェクト保存</button>
+          <button id="openProject" type="button" title="v1 と共通の .psft を開きます">開く</button>
+          <input id="openProjectInput" type="file" accept=".psft,application/json" hidden />
+          <button id="exportPng" type="button">PNG保存</button>
+          <button id="exportPsd" type="button" title="レイヤーとフォルダを保持してPSD形式で書き出し">PSD書き出し</button>
+        </div>
+
+        <div class="group">
+          <button id="toggleNodePanel" type="button" title="ノードエディタの表示を切り替え">ノード</button>
+          <button id="shortcutSettings" type="button">ショートカット</button>
+          <button id="canvasSettings" type="button">キャンバス設定</button>
+          <button id="resetView" type="button" title="表示位置とズームを初期化 (Ctrl+0)">表示リセット</button>
+        </div>
+
+        <div class="group right">
+          <button id="benchmark" type="button" title="重い描画負荷をかけて計測します">負荷テスト</button>
+        </div>
+      </header>
+
+      <main class="stage">
+        <div class="viewport">
+          <canvas id="stage" aria-label="キャンバス"></canvas>
+
+          <aside id="nodePanel" class="nodePanel" hidden aria-label="ノードエディタ">
+            <div class="nodePanelHead">
+              <span>ノード</span>
+              <button type="button" id="nodePanelClose" class="dialogCloseBtn" title="閉じる">×</button>
+            </div>
+            <p class="note">
+              ボックスの上下位置が重なり順です（上にあるほど手前）。左の丸をクリックすると出力への接続＝表示を切り替えます。
+            </p>
+            <div id="nodeCanvas" class="nodeCanvas"></div>
+          </aside>
+
+          <div id="stats" class="stats" aria-live="off"></div>
+          <div id="hint" class="hint">ドラッグで描画 / ホイールでズーム / Space+ドラッグで移動 / Ctrl+Space+左右ドラッグでズーム</div>
+        </div>
+
+        <aside class="sidebar">
+          <section class="panel">
+            <div class="panelHead">
+              <h2>ブラシ</h2>
+              <div class="panelActions">
+                <button id="presetAdd" type="button" title="現在の設定を新しいブラシとして追加">＋</button>
+                <button id="presetUpdate" type="button" title="選択中のブラシを現在の設定で上書き">💾</button>
+                <button id="presetDelete" type="button" title="選択中のブラシを削除">－</button>
+              </div>
+            </div>
+            <ul id="presetList" class="presetList"></ul>
+          </section>
+
+          <section class="panel">
+            <h2>現在の設定</h2>
+
+            <div class="field">
+              <div class="fieldHead"><span>太さ</span><output id="sizeOut">24</output></div>
+              <input id="size" type="range" min="1" max="600" value="24" />
+              <div class="sub">
+                <label class="check"><input id="sizePressure" type="checkbox" checked /><span>筆圧</span></label>
+                <div class="pair">
+                  <span>最小</span><input id="sizeMin" type="range" min="0" max="200" value="10" />
+                  <output id="sizeMinOut">10%</output>
+                </div>
+                <div class="pair">
+                  <span>最大</span><input id="sizeMax" type="range" min="0" max="100" value="100" />
+                  <output id="sizeMaxOut">100%</output>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="fieldHead"><span>不透明度</span><output id="opacityOut">100%</output></div>
+              <input id="opacity" type="range" min="0" max="100" value="100" />
+              <div class="sub">
+                <label class="check"><input id="opacityPressure" type="checkbox" checked /><span>筆圧</span></label>
+                <div class="pair">
+                  <span>最小</span><input id="opacityMin" type="range" min="0" max="100" value="0" />
+                  <output id="opacityMinOut">0%</output>
+                </div>
+                <div class="pair">
+                  <span>最大</span><input id="opacityMax" type="range" min="0" max="100" value="100" />
+                  <output id="opacityMaxOut">100%</output>
+                </div>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="fieldHead"><span>ぼかし</span><output id="blurOut">0</output></div>
+              <input id="blur" type="range" min="0" max="100" value="0" />
+              <p class="note">0でアンチエイリアスなしの二値、上げるほどエアブラシ状に広がります。</p>
+            </div>
+
+            <div class="field">
+              <div class="fieldHead"><span>間隔</span><output id="spacingOut">15%</output></div>
+              <input id="spacing" type="range" min="1" max="100" value="15" />
+            </div>
+
+            <label class="check standalone">
+              <input id="buildup" type="checkbox" />
+              <span>重ね塗り（同じ場所を往復すると濃くなる）</span>
+            </label>
+          </section>
+
+          <section class="panel">
+            <h2>グローバル設定</h2>
+
+            <label class="check standalone">
+              <input id="pressureEnabled" type="checkbox" checked />
+              <span>筆圧を有効にする</span>
+            </label>
+
+            <div class="field">
+              <div class="fieldHead"><span>手ブレ補正</span><output id="stabilizerOut">0</output></div>
+              <input id="stabilizer" type="range" min="0" max="95" value="0" />
+            </div>
+
+            <div class="field">
+              <div class="fieldHead"><span>筆圧補正</span><output id="pressureSmoothingOut">0</output></div>
+              <input id="pressureSmoothing" type="range" min="0" max="95" value="0" />
+            </div>
+
+            <div class="field">
+              <div class="fieldHead"><span>ブラシサイズの基準</span></div>
+              <select id="sizeUnit">
+                <option value="document" selected>キャンバスのピクセル（拡大すると太く見える）</option>
+                <option value="screen">画面のピクセル（v1と同じ・見た目の太さ固定）</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panelHead">
+              <h2>レイヤー</h2>
+              <div class="panelActions">
+                <button id="layerAdd" type="button" title="レイヤーを追加">＋</button>
+                <button id="folderAdd" type="button" title="フォルダを追加">📁</button>
+                <button id="layerClear" type="button" title="選択中のレイヤーを消去">🧹</button>
+                <button id="layerDelete" type="button" title="選択中のノードを削除">－</button>
+              </div>
+            </div>
+            <div class="layerProps">
+              <div class="pair">
+                <span>合成</span>
+                <select id="layerBlend"></select>
+              </div>
+              <div class="pair">
+                <span>不透明</span>
+                <input id="layerOpacity" type="range" min="0" max="100" value="100" />
+                <output id="layerOpacityOut">100%</output>
+              </div>
+              <label class="check">
+                <input id="layerClipped" type="checkbox" />
+                <span>下のレイヤーでクリッピング</span>
+              </label>
+              <div class="maskRow">
+                <button id="maskAdd" type="button" title="レイヤーマスクを追加">マスク追加</button>
+                <button id="maskDelete" type="button" title="レイヤーマスクを削除">削除</button>
+                <label class="check">
+                  <input id="maskEdit" type="checkbox" />
+                  <span>マスクを編集</span>
+                </label>
+              </div>
+            </div>
+
+            <ul id="layerList" class="layerList"></ul>
+            <p class="note">ドラッグで並べ替え、フォルダの中央にドロップで格納。名前はダブルクリックで変更できます。</p>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <dialog id="canvasDialog" class="appDialog">
+      <form method="dialog">
+        <div class="dialogHead">
+          <h2>キャンバス設定</h2>
+          <button value="cancel" class="dialogCloseBtn" title="閉じる" aria-label="閉じる">×</button>
+        </div>
+
+        <div class="dialogTabs">
+          <button type="button" id="modeScale" class="dialogTab" aria-pressed="true">解像度変更（リサイズ）</button>
+          <button type="button" id="modeCrop" class="dialogTab" aria-pressed="false">サイズ変更（切り抜き/拡張）</button>
+        </div>
+
+        <p id="modeHint" class="note">絵の内容を新しいサイズに合わせて拡大縮小します。</p>
+
+        <div class="field">
+          <div class="fieldHead"><span>幅 (px)</span></div>
+          <input id="canvasWidth" type="number" min="1" max="8192" />
+        </div>
+        <div class="field">
+          <div class="fieldHead"><span>高さ (px)</span></div>
+          <input id="canvasHeight" type="number" min="1" max="8192" />
+        </div>
+
+        <label class="check standalone">
+          <input id="lockAspect" type="checkbox" checked />
+          <span>アスペクト比を固定</span>
+        </label>
+
+        <div id="anchorWrap" class="field" hidden>
+          <div class="fieldHead"><span>基準位置</span></div>
+          <div id="anchorGrid" class="anchorGrid">
+            <button type="button" data-x="0" data-y="0"></button>
+            <button type="button" data-x="0.5" data-y="0"></button>
+            <button type="button" data-x="1" data-y="0"></button>
+            <button type="button" data-x="0" data-y="0.5"></button>
+            <button type="button" data-x="0.5" data-y="0.5" class="active"></button>
+            <button type="button" data-x="1" data-y="0.5"></button>
+            <button type="button" data-x="0" data-y="1"></button>
+            <button type="button" data-x="0.5" data-y="1"></button>
+            <button type="button" data-x="1" data-y="1"></button>
+          </div>
+        </div>
+
+        <div class="dialogFooter">
+          <button value="cancel">キャンセル</button>
+          <button id="canvasApply" value="apply" class="primary">適用</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="shortcutDialog" class="appDialog">
+      <form method="dialog">
+        <div class="dialogHead">
+          <h2>ショートカット</h2>
+          <button value="cancel" class="dialogCloseBtn" title="閉じる" aria-label="閉じる">×</button>
+        </div>
+
+        <p class="note">
+          行を選んでから、割り当てたいキーを押してください。「保存」を押すまで確定しません。
+          やり直しは <code>Ctrl+Shift+Z</code> でも常に実行できます（変更不可）。
+        </p>
+
+        <div id="shortcutRows" class="shortcutRows"></div>
+
+        <div class="dialogFooter">
+          <button type="button" id="shortcutReset">デフォルトに戻す</button>
+          <button id="shortcutCancel" value="cancel">キャンセル</button>
+          <button id="shortcutApply" value="apply" class="primary">保存</button>
+        </div>
+      </form>
+    </dialog>
+
+  </body>
+</html>
