@@ -1,6 +1,6 @@
 # PaintSoft v2
 
-WebGL2 + TypeScript による PaintSoft の作り直し版です。既存の `../PaintSoft`（v1）はそのまま残してあり、並行して動かせます。`.psft` はv1と共通形式なので、ファイルは両方向にやり取りできます。
+WebGL2 + TypeScript による PaintSoft の作り直し版です。旧v1（`PaintSoft`）はリポジトリ履歴に残しつつ作業ツリーからは削除済みで、現行版はこのv2のみです。`.psft` はv1と共通形式なので、v1で書き出したファイルもそのまま読み込めます。
 
 ## なぜ作り直したか
 
